@@ -48,9 +48,9 @@ namespace tq84 {
                                     |
                                     \*/ (?<-LEVEL>)     # On closing pop level
                                     |
-                                    (?! /\* | \*/ ) . # Match any char unless the opening and closing strings
-                                    )+                         # /* or */ in the lookahead string
-                                    (?(LEVEL)(?!))             # If level exists then fail
+                                    (?! /\* | \*/ ) .   # Match any char unless the opening and closing strings
+                                    )+                  # /* or */ in the lookahead string
+                                    (?(LEVEL)(?!))      # If level exists then fail
                                     \*/";
 
         string noComments = Regex.Replace(input,
@@ -77,25 +77,29 @@ namespace tq84 {
                 if (txt.Value.StartsWith("--")) {
 
                     if (preservePositions)
-                        return noEOLchar.Replace(txt.Value, " "); // preserve positions and keep line-breaks
+                    //  preserve positions and keep line-breaks
+                        return noEOLchar.Replace(txt.Value, " ");
 
-                    return noEOLchar.Replace(txt.Value, ""); // preserve only line-breaks // Environment.NewLine;
+                    //  preserve only line-breaks
+                    return noEOLchar.Replace(txt.Value, "");
 
                 }
 
-                if (txt.Value.StartsWith("[") || txt.Value.StartsWith("\""))
+                if (txt.Value.StartsWith("[") || txt.Value.StartsWith("\"")) {
                 //  Don't ever remove object identifiers
                     return txt.Value;
+                }
 
-                if (!removeLiterals)
+                if (!removeLiterals) {
                 //  Keep literal strings
                     return txt.Value;
+                }
 
 
                 if (preservePositions) {
-                 //
-                 // remove literals, but preserve positions and line-breaks
-                 //
+                //
+                //  Remove literals, but preserve positions and line-breaks
+                //
                     var literalWithLineBreaks = noEOLchar.Replace(txt.Value, " ");
                     return "'" + literalWithLineBreaks.Substring(1, literalWithLineBreaks.Length - 2) + "'";
                 }
